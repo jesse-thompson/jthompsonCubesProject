@@ -18,6 +18,7 @@ def get_apikey():
     return apikey_from_file
 
 
+# the form hash is the form ID
 def get_form_hash():
     config = configparser.ConfigParser()
     config.read('app.config')
@@ -25,10 +26,23 @@ def get_form_hash():
     return form_hash_from_file
 
 
+# parses the raw response, creates file, and saves data from response in easily referenced format
+def make_responses_file(api_response):
+    f = open('form_responses_file', 'w', encoding="utf-8")
+    with open('form_responses_file', 'w', encoding="utf-8") as f:
+        file_data = f.write(api_response)
+
+
+# unused appending of responses file
+# def append_responses_file(api_response):
+#     f = open('form_responses_file', 'a', encoding="utf=8")
+
+
+# Following code adapted from wufoo API documentation
 # Authentication formatting
 base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
 username = get_apikey()
-password = 'footastic'  # this can be any string as per documentation as it is not checked
+password = 'footastic'  # this can nonsense as per documentation as it is not checked
 
 # Create a password manager
 password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
@@ -44,10 +58,18 @@ opener = urllib.request.build_opener(handler)
 urllib.request.install_opener(opener)
 
 # Now each request we make will be authenticated
-response = urllib.request.urlopen(base_url + f'forms/{get_form_hash()}/entries.json?sort=EntryId&sortDirection=DESC')
+response = urllib.request.urlopen(base_url + f'forms/{get_form_hash()}/entries.json?')
 data = json.load(response)
+# End of code adapted from wufoo API documentation
 
-print(json.dumps(data, indent=4, sort_keys=True))
+json_response = json.dumps(data, indent=4, sort_keys=True)
+
+make_responses_file(json_response)
+
+with open('form_responses_file', 'r', encoding="utf-8") as file:
+    print(file.read())
+
+print()
 
 # TODO: parse response to change "Field#" into the field names
 # TODO: save reformatted response to file
