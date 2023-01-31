@@ -51,7 +51,7 @@ def make_responses_file(api_response):
                 f"Permission Granted: {api_response['Entries'][0]['Field210']}")
 
 
-# unused appending of responses file
+# unused appending of responses file, may use later
 # def append_responses_file(api_response):
 #     f = open('form_responses_file', 'a', encoding="utf=8")
 
@@ -87,5 +87,3 @@ make_responses_file(data)
 
 with open('form_responses_file', 'r', encoding="utf-8") as file:
     print(file.read())
-
-# TODO: add README.md
