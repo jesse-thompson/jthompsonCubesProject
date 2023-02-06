@@ -2,7 +2,6 @@ import urllib.request
 import sys
 import configparser
 import json
-import time
 import sqlite3
 from typing import Tuple
 
@@ -41,43 +40,57 @@ def close_db(connection: sqlite3.Connection):
 
 
 def make_response_database(cursor: sqlite3.Cursor):
-    cursor.execute('''CREATE TABLE IF NOT EXISTS entries(id INTEGER PRIMARY KEY, created TEXT NOT NULL, 
-                    prefix TEXT NOT NULL, f_name TEXT NOT NULL, l_name TEXT NOT NULL, title TEXT NOT NULL, 
-                    org_name TEXT NOT NULL, email TEXT NOT NULL, org_site TEXT NOT NULL, phone TEXT NOT NULL, 
-                    interest1, interest2, interest3, interest4, interest5, interest6, interest7, colTime1, colTime2, 
-                    colTime3, colTime4, colTime5, perm_grant REAL DEFAULT 'No')''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS entries(id INTEGER PRIMARY KEY, 
+                    created TEXT NOT NULL, 
+                    prefix TEXT NOT NULL, 
+                    f_name TEXT NOT NULL, 
+                    l_name TEXT NOT NULL, 
+                    title TEXT NOT NULL, 
+                    org_name TEXT NOT NULL, 
+                    email TEXT NOT NULL, 
+                    org_site TEXT NOT NULL, 
+                    phone TEXT NOT NULL, 
+                    interest1, interest2, interest3, interest4, interest5, interest6, interest7, 
+                    colTime1, colTime2, colTime3, colTime4, colTime5, 
+                    perm_grant REAL DEFAULT 'No')''')
 
 
-def input_entries(api_response, cursor: sqlite3.Cursor):
+def input_entries(cursor: sqlite3.Cursor):
+    f = open('form_responses_file', 'r')
+    data = f.read().splitlines()
+
     cursor.executemany('''INSERT INTO ENTRIES (id, created, prefixm, f_name, l_name, title, org_name, email, org_site,
                     phone, interest1, interest2, interest3, interest4, interest5, interest6, interest7, colTime1,
-                    colTime2, colTime3, colTime4, colTime5, perm_grant) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                    ?,?,?,?)''', api_response)
+                    colTime2, colTime3, colTime4, colTime5, perm_grant) 
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', data)
 
 
 # parses the raw response, creates file, and saves data from response in easily referenced format
 def make_responses_file(api_response):
-    open('form_responses_file', 'w', encoding="utf-8")
-    with open('form_responses_file', 'w', encoding="utf-8") as f:
-        f.write(f"Entry ID: {api_response['Entries'][0]['EntryId']}\n"
-                f"Entry Created: {api_response['Entries'][0]['DateCreated']}\n"
-                f"Entry Retrieved: {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())}\n"
-                f"Prefix: {api_response['Entries'][0]['Field2']}\n"
-                f"First Name: {api_response['Entries'][0]['Field3']}\n"
-                f"Last Name: {api_response['Entries'][0]['Field4']}\n"
-                f"Title: {api_response['Entries'][0]['Field5']}\n"
-                f"Organization Name: {api_response['Entries'][0]['Field6']}\n"
-                f"Email: {api_response['Entries'][0]['Field7']}\n"
-                f"Organization Website: {api_response['Entries'][0]['Field8']}\n"
-                f"Phone #: {api_response['Entries'][0]['Field9']}\n"
-                f"Interests:\n  {api_response['Entries'][0]['Field10']}\n  {api_response['Entries'][0]['Field11']}\n"
-                f"  {api_response['Entries'][0]['Field12']}\n  {api_response['Entries'][0]['Field13']}\n"
-                f"  {api_response['Entries'][0]['Field14']}\n  {api_response['Entries'][0]['Field15']}\n"
-                f"  {api_response['Entries'][0]['Field16']}\n"
-                f"Collaboration Time:\n  {api_response['Entries'][0]['Field110']}\n"
-                f"  {api_response['Entries'][0]['Field111']}\n  {api_response['Entries'][0]['Field112']}\n"
-                f"  {api_response['Entries'][0]['Field113']}\n  {api_response['Entries'][0]['Field114']}\n"
-                f"Permission Granted: {api_response['Entries'][0]['Field210']}")
+    with open('form_responses_file', 'w') as f:
+        f.write(f"{api_response['Entries'][0]['EntryId']}\n"
+                f"{api_response['Entries'][0]['DateCreated']}\n"
+                f"{api_response['Entries'][0]['Field2']}\n"
+                f"{api_response['Entries'][0]['Field3']}\n"
+                f"{api_response['Entries'][0]['Field4']}\n"
+                f"{api_response['Entries'][0]['Field5']}\n"
+                f"{api_response['Entries'][0]['Field6']}\n"
+                f"{api_response['Entries'][0]['Field7']}\n"
+                f"{api_response['Entries'][0]['Field8']}\n"
+                f"{api_response['Entries'][0]['Field9']}\n"
+                f"{api_response['Entries'][0]['Field10']}\n"
+                f"{api_response['Entries'][0]['Field11']}\n"
+                f"{api_response['Entries'][0]['Field12']}\n"
+                f"{api_response['Entries'][0]['Field13']}\n"
+                f"{api_response['Entries'][0]['Field14']}\n"
+                f"{api_response['Entries'][0]['Field15']}\n"
+                f"{api_response['Entries'][0]['Field16']}\n"
+                f"{api_response['Entries'][0]['Field110']}\n"
+                f"{api_response['Entries'][0]['Field111']}\n"
+                f"{api_response['Entries'][0]['Field112']}\n"
+                f"{api_response['Entries'][0]['Field113']}\n"
+                f"{api_response['Entries'][0]['Field114']}\n"
+                f"{api_response['Entries'][0]['Field210']}")
 
 
 def get_response(url, api_key):
@@ -96,7 +109,7 @@ def get_response(url, api_key):
         print(f"Request failed, form data not retrieved.\n"
               f"Response Code: {response.code}\n"
               f"Error Message: {response.reason}")
-        sys.exit(1)
+        sys.exit(-1)
     data = json.loads(response.read())
     # End of code adapted from Wufoo API documentation
 
@@ -109,25 +122,20 @@ def main():
     username = get_apikey()
     response = get_response(base_url, username)
 
-    data = [response['Entries'][0]['EntryId'], response['Entries'][0]['DateCreated'], response['Entries'][0]['Field2'],
-            response['Entries'][0]['Field3'], response['Entries'][0]['Field4'], response['Entries'][0]['Field5'],
-            response['Entries'][0]['Field6'], response['Entries'][0]['Field7'], response['Entries'][0]['Field8'],
-            response['Entries'][0]['Field9'], response['Entries'][0]['Field10'], response['Entries'][0]['Field11'],
-            response['Entries'][0]['Field12'], response['Entries'][0]['Field13'], response['Entries'][0]['Field14'],
-            response['Entries'][0]['Field15'], response['Entries'][0]['Field16'], response['Entries'][0]['Field110'],
-            response['Entries'][0]['Field111'], response['Entries'][0]['Field112'], response['Entries'][0]['Field113'],
-            response['Entries'][0]['Field114'], response['Entries'][0]['Field210']]
+    make_responses_file(response)
+    input_entries(sqlite3.Cursor)
 
-    print(data)
+    # conn, cursor = open_db("wufoo_entries.db")
+    # print(type(conn))
+    # input_entries()
+    # close_db(conn)
 
-    conn, cursor = open_db("wufoo_entries.db")
-    print(type(conn))
-    input_entries(data, sqlite3.Cursor)
-    close_db(conn)
-
-    # make_responses_file(response)
-    # with open('form_responses_file', 'r', encoding="utf-8") as file:
+    # with open('form_responses_file', 'r') as file:
     #     print(file.read())
+
+    # f = open('form_responses_file', 'r')
+    # data = f.read().splitlines()
+    # print(data)
 
 
 if __name__ == '__main__':
