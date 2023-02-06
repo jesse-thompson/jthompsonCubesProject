@@ -41,11 +41,18 @@ def close_db(connection: sqlite3.Connection):
 
 
 def make_response_database(cursor: sqlite3.Cursor):
-    cursor.execute('''CREATE TABLE IF NOT EXISTS entries(ID INTEGER PRIMARY KEY, Created TEXT NOT NULL, 
-                    Prefix TEXT NOT NULL, FName TEXT NOT NULL, LName TEXT NOT NULL, Title TEXT NOT NULL, 
-                    OrgName TEXT NOT NULL, Email TEXT NOT NULL, OrgSite TEXT NOT NULL, Phone TEXT NOT NULL, 
-                    Interest1, Interest2, Interest3, Interest4, Interest5, Interest6, Interest7, ColTime1, ColTime2, 
-                    ColTime3, ColTime4, ColTime5, PermGrant REAL DEFAULT 'No')''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS entries(id INTEGER PRIMARY KEY, created TEXT NOT NULL, 
+                    prefix TEXT NOT NULL, f_name TEXT NOT NULL, l_name TEXT NOT NULL, title TEXT NOT NULL, 
+                    org_name TEXT NOT NULL, email TEXT NOT NULL, org_site TEXT NOT NULL, phone TEXT NOT NULL, 
+                    interest1, interest2, interest3, interest4, interest5, interest6, interest7, colTime1, colTime2, 
+                    colTime3, colTime4, colTime5, perm_grant REAL DEFAULT 'No')''')
+
+
+def input_entries(api_response, cursor: sqlite3.Cursor):
+    cursor.executemany('''INSERT INTO ENTRIES (id, created, prefixm, f_name, l_name, title, org_name, email, org_site,
+                    phone, interest1, interest2, interest3, interest4, interest5, interest6, interest7, colTime1,
+                    colTime2, colTime3, colTime4, colTime5, perm_grant) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+                    ?,?,?,?)''', api_response)
 
 
 # parses the raw response, creates file, and saves data from response in easily referenced format
@@ -77,7 +84,7 @@ def get_response(url, api_key):
     # Following code is adapted from Wufoo API documentation
     # Authentication for requests
     password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-    password_manager.add_password(None, url, api_key, "nonsense")   # nonsense is 'password' that isn't checked
+    password_manager.add_password(None, url, api_key, "nonsense")  # nonsense is 'password' that isn't checked
     handler = urllib.request.HTTPBasicAuthHandler(password_manager)
 
     # Create and install an opener using the AuthHandler
@@ -98,15 +105,25 @@ def get_response(url, api_key):
 
 def main():
     # Authentication formatting
-    # base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
-    # username = get_apikey()
-    # response = get_response(base_url, username)
+    base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
+    username = get_apikey()
+    response = get_response(base_url, username)
+
+    data = [response['Entries'][0]['EntryId'], response['Entries'][0]['DateCreated'], response['Entries'][0]['Field2'],
+            response['Entries'][0]['Field3'], response['Entries'][0]['Field4'], response['Entries'][0]['Field5'],
+            response['Entries'][0]['Field6'], response['Entries'][0]['Field7'], response['Entries'][0]['Field8'],
+            response['Entries'][0]['Field9'], response['Entries'][0]['Field10'], response['Entries'][0]['Field11'],
+            response['Entries'][0]['Field12'], response['Entries'][0]['Field13'], response['Entries'][0]['Field14'],
+            response['Entries'][0]['Field15'], response['Entries'][0]['Field16'], response['Entries'][0]['Field110'],
+            response['Entries'][0]['Field111'], response['Entries'][0]['Field112'], response['Entries'][0]['Field113'],
+            response['Entries'][0]['Field114'], response['Entries'][0]['Field210']]
+
+    print(data)
 
     conn, cursor = open_db("wufoo_entries.db")
     print(type(conn))
+    input_entries(data, sqlite3.Cursor)
     close_db(conn)
-
-    # make_response_database(response)
 
     # make_responses_file(response)
     # with open('form_responses_file', 'r', encoding="utf-8") as file:
