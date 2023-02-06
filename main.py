@@ -39,7 +39,8 @@ def close_db(connection: sqlite3.Connection):
     connection.close()
 
 
-def make_response_database(cursor: sqlite3.Cursor):
+def make_response_database(filename: str):
+    conn, cursor = open_db(filename)
     cursor.execute('''CREATE TABLE IF NOT EXISTS entries(id INTEGER PRIMARY KEY, 
                     created TEXT NOT NULL, 
                     prefix TEXT NOT NULL, 
@@ -53,16 +54,17 @@ def make_response_database(cursor: sqlite3.Cursor):
                     interest1, interest2, interest3, interest4, interest5, interest6, interest7, 
                     colTime1, colTime2, colTime3, colTime4, colTime5, 
                     perm_grant REAL DEFAULT 'No')''')
+    close_db(conn)
 
 
-def input_entries(cursor: sqlite3.Cursor):
+def input_entries():
     f = open('form_responses_file', 'r')
     data = f.read().splitlines()
 
-    cursor.executemany('''INSERT INTO ENTRIES (id, created, prefixm, f_name, l_name, title, org_name, email, org_site,
-                    phone, interest1, interest2, interest3, interest4, interest5, interest6, interest7, colTime1,
-                    colTime2, colTime3, colTime4, colTime5, perm_grant) 
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', data)
+    conn, cursor = open_db('wufoo_entries.db')
+    cursor.executemany('''INSERT INTO entries 
+                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', [data])
+    close_db(conn)
 
 
 # parses the raw response, creates file, and saves data from response in easily referenced format
@@ -121,14 +123,9 @@ def main():
     base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
     username = get_apikey()
     response = get_response(base_url, username)
-
     make_responses_file(response)
-    input_entries(sqlite3.Cursor)
-
-    # conn, cursor = open_db("wufoo_entries.db")
-    # print(type(conn))
-    # input_entries()
-    # close_db(conn)
+    make_response_database('wufoo_entries.db')
+    input_entries()
 
     # with open('form_responses_file', 'r') as file:
     #     print(file.read())
