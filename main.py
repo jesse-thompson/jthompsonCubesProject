@@ -56,34 +56,39 @@ def make_responses_file(api_response):
 #     f = open('form_responses_file', 'a', encoding="utf=8")
 
 
-# Following code adapted from Wufoo API documentation
-# Authentication formatting
-base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
-username = get_apikey()
-password = 'footastic'  # this can nonsense as per documentation as it is not checked
+def main():
+    # Following code adapted from Wufoo API documentation
+    # Authentication formatting
+    base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
+    username = get_apikey()
+    password = 'footastic'  # this can nonsense as per documentation as it is not checked
 
-# Create a password manager
-password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+    # Create a password manager
+    password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
 
-# Add the username and password (API key and nonsense value)
-password_manager.add_password(None, base_url, username, password)
+    # Add the username and password (API key and nonsense value)
+    password_manager.add_password(None, base_url, username, password)
 
-# Create the AuthHandler
-handler = urllib.request.HTTPBasicAuthHandler(password_manager)
+    # Create the AuthHandler
+    handler = urllib.request.HTTPBasicAuthHandler(password_manager)
 
-# Create and install an opener using the AuthHandler
-opener = urllib.request.build_opener(handler)
-urllib.request.install_opener(opener)
+    # Create and install an opener using the AuthHandler
+    opener = urllib.request.build_opener(handler)
+    urllib.request.install_opener(opener)
 
-# Now each request we make will be authenticated
-response = urllib.request.urlopen(base_url + f'forms/{get_form_hash()}/entries.json?')
-data = json.loads(response.read())
-# End of code adapted from Wufoo API documentation
+    # Now each request we make will be authenticated
+    response = urllib.request.urlopen(base_url + f'forms/{get_form_hash()}/entries.json?')
+    data = json.loads(response.read())
+    # End of code adapted from Wufoo API documentation
 
-# json_response = json.dumps(data, indent=4, sort_keys=True)
-# json_response = response.json()
+    # json_response = json.dumps(data, indent=4, sort_keys=True)
+    # json_response = response.json()
 
-make_responses_file(data)
+    make_responses_file(data)
 
-with open('form_responses_file', 'r', encoding="utf-8") as file:
-    print(file.read())
+    with open('form_responses_file', 'r', encoding="utf-8") as file:
+        print(file.read())
+
+
+if __name__ == '__main__':
+    main()
