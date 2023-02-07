@@ -42,7 +42,6 @@ def close_db(connection: sqlite3.Connection):
 def make_response_database(filename: str):
     conn, cursor = open_db(filename)
     cursor.execute('''CREATE TABLE IF NOT EXISTS entries(id INTEGER PRIMARY KEY, 
-                    created TEXT NOT NULL, 
                     prefix TEXT NOT NULL, 
                     f_name TEXT NOT NULL, 
                     l_name TEXT NOT NULL, 
@@ -53,46 +52,30 @@ def make_response_database(filename: str):
                     phone TEXT NOT NULL, 
                     interest1, interest2, interest3, interest4, interest5, interest6, interest7, 
                     colTime1, colTime2, colTime3, colTime4, colTime5, 
-                    perm_grant REAL DEFAULT 'No')''')
+                    permission_grant REAL DEFAULT 'No',
+                    date_created TEXT NOT NULL,
+                    created_by TEXT NOT NULL,
+                    date_updated TEXT NOT  NULL,
+                    updated_by TEXT NOT NULL)''')
     close_db(conn)
 
 
-def input_entries():
-    f = open('form_responses_file', 'r')
-    data = f.read().splitlines()
-
-    conn, cursor = open_db('wufoo_entries.db')
-    cursor.executemany('''INSERT INTO entries 
-                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', [data])
-    close_db(conn)
+def input_entries(table: str):
+    with open('form_responses_file', 'r') as data:
+        conn, cursor = open_db(table)
+        for line in data:
+            data1 = line.split()
+            cursor.executemany('''INSERT INTO entries 
+                               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (data.read().splitlines(),))
+        close_db(conn)
 
 
 # parses the raw response, creates file, and saves data from response in easily referenced format
-def make_responses_file(api_response):
-    with open('form_responses_file', 'w') as f:
-        f.write(f"{api_response['Entries'][0]['EntryId']}\n"
-                f"{api_response['Entries'][0]['DateCreated']}\n"
-                f"{api_response['Entries'][0]['Field2']}\n"
-                f"{api_response['Entries'][0]['Field3']}\n"
-                f"{api_response['Entries'][0]['Field4']}\n"
-                f"{api_response['Entries'][0]['Field5']}\n"
-                f"{api_response['Entries'][0]['Field6']}\n"
-                f"{api_response['Entries'][0]['Field7']}\n"
-                f"{api_response['Entries'][0]['Field8']}\n"
-                f"{api_response['Entries'][0]['Field9']}\n"
-                f"{api_response['Entries'][0]['Field10']}\n"
-                f"{api_response['Entries'][0]['Field11']}\n"
-                f"{api_response['Entries'][0]['Field12']}\n"
-                f"{api_response['Entries'][0]['Field13']}\n"
-                f"{api_response['Entries'][0]['Field14']}\n"
-                f"{api_response['Entries'][0]['Field15']}\n"
-                f"{api_response['Entries'][0]['Field16']}\n"
-                f"{api_response['Entries'][0]['Field110']}\n"
-                f"{api_response['Entries'][0]['Field111']}\n"
-                f"{api_response['Entries'][0]['Field112']}\n"
-                f"{api_response['Entries'][0]['Field113']}\n"
-                f"{api_response['Entries'][0]['Field114']}\n"
-                f"{api_response['Entries'][0]['Field210']}")
+def make_responses_file(api_response: list, data_file=None):
+    for entry in api_response:
+        for key, value in entry.items():
+            print(f"{value}", file=data_file)
+        print("+++\n___", file=data_file)  # separator
 
 
 def get_response(url, api_key):
@@ -120,12 +103,20 @@ def get_response(url, api_key):
 
 def main():
     # Authentication formatting
-    base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
-    username = get_apikey()
-    response = get_response(base_url, username)
-    make_responses_file(response)
+    # base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
+    # username = get_apikey()
+    # response = get_response(base_url, username)
+    # response_list = response["Entries"]
+    # with open("form_responses_file", 'w') as form_save:
+    #     make_responses_file(response_list, data_file=form_save)
+
+    with open('wufoo_entries.db', 'r') as data:
+        for line in data:
+            data1 = line.split()
+        print(data1)
+
     make_response_database('wufoo_entries.db')
-    input_entries()
+    input_entries('wufoo_entries.db')
 
     # with open('form_responses_file', 'r') as file:
     #     print(file.read())
