@@ -103,18 +103,19 @@ def get_response(url, api_key):
 
 def main():
     # Authentication formatting
-    # base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
-    # username = get_apikey()
-    # response = get_response(base_url, username)
-    # response_list = response["Entries"]
-    # with open("form_responses_file", 'w') as form_save:
-    #     make_responses_file(response_list, data_file=form_save)
+    base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
+    username = get_apikey()
+    response = get_response(base_url, username)
+    response_list = response["Entries"]
+    with open("form_responses_file", 'w') as form_save:
+        make_responses_file(response_list, data_file=form_save)
 
-    with open('wufoo_entries.db', 'r') as data:
-        for line in data:
-            data1 = line.split()
-        print(data1)
+    f = open('form_responses_file')
+    with open("new_file", 'w') as new_file:
 
+        print(f.read().splitlines(), file=new_file)
+    with open("new_file", 'r') as x:
+        print(x.read())
     make_response_database('wufoo_entries.db')
     input_entries('wufoo_entries.db')
 
