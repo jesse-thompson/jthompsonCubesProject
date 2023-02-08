@@ -9,6 +9,7 @@ config = configparser.ConfigParser()
 
 
 # the subdomain is the username for the Wufoo account
+# comment to test workflow
 def get_subdomain():
     config.read('app.config')
     subdomain_from_file = config['secrets']['subdomain']
