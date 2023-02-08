@@ -62,12 +62,15 @@ def make_response_database(filename: str):
 
 def input_entries(table: str):
     with open('form_responses_file', 'r') as data:
+        data_text = data.read().splitlines()
+        it = [iter(data_text)] * 26
+        data_tuples = zip(*it)
+
         conn, cursor = open_db(table)
-        for line in data:
-            data1 = line.split()
-            cursor.executemany('''INSERT INTO entries 
-                               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (data.read().splitlines(),))
+        cursor.executemany('''INSERT INTO entries 
+                           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', data_tuples)
         close_db(conn)
+    # TODO: prevent UNIQUE constraint failure
 
 
 # parses the raw response, creates file, and saves data from response in easily referenced format
@@ -75,7 +78,7 @@ def make_responses_file(api_response: list, data_file=None):
     for entry in api_response:
         for key, value in entry.items():
             print(f"{value}", file=data_file)
-        print("+++\n___", file=data_file)  # separator
+        # print("+++\n___", file=data_file)  # separator
 
 
 def get_response(url, api_key):
@@ -110,21 +113,8 @@ def main():
     with open("form_responses_file", 'w') as form_save:
         make_responses_file(response_list, data_file=form_save)
 
-    f = open('form_responses_file')
-    with open("new_file", 'w') as new_file:
-
-        print(f.read().splitlines(), file=new_file)
-    with open("new_file", 'r') as x:
-        print(x.read())
     make_response_database('wufoo_entries.db')
     input_entries('wufoo_entries.db')
-
-    # with open('form_responses_file', 'r') as file:
-    #     print(file.read())
-
-    # f = open('form_responses_file', 'r')
-    # data = f.read().splitlines()
-    # print(data)
 
 
 if __name__ == '__main__':
