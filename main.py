@@ -40,8 +40,8 @@ def make_response_database(filename: str):
     close_db(conn)
 
 
-def input_entries(table: str):
-    with open('form_responses_file', 'r') as data:
+def input_entries(response_file: str, table: str):
+    with open(response_file, 'r') as data:
         data_text = data.read().splitlines()
         it = [iter(data_text)] * 26
         data_tuples = zip(*it)
@@ -92,7 +92,7 @@ def main():
         make_responses_file(response_list, data_file=form_save)
 
     make_response_database('wufoo_entries.db')
-    input_entries('wufoo_entries.db')
+    input_entries('form_responses_file', 'wufoo_entries.db')
 
 
 if __name__ == '__main__':
