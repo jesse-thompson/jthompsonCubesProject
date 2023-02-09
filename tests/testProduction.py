@@ -12,11 +12,11 @@ def test_entry_retrieval():
 
 def test_database_entry():
     total_entries = 13
-    # url = 'https://{}.wufoo.com/api/v3/'.format(secrets.subdomain)
-    # retrieved_entries = main.get_response(url, secrets.apikey)
-    # entries_list = retrieved_entries['Entries']
-    # with open("test_file", 'w') as form_save:
-    #     main.make_responses_file(entries_list, data_file=form_save)
+    url = 'https://{}.wufoo.com/api/v3/'.format(secrets.subdomain)
+    retrieved_entries = main.get_response(url, secrets.apikey)
+    entries_list = retrieved_entries['Entries']
+    with open("test_file", 'w') as form_save:
+        main.make_responses_file(entries_list, data_file=form_save)
 
     main.make_response_database('testing.db')
     main.input_entries('test_file', 'testing.db')
