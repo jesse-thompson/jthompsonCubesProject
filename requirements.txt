@@ -1,1 +1,1 @@
-pysqlite3
+pytest~=7.2.0
