@@ -70,7 +70,7 @@ def get_response(url, api_key):
     opener = urllib.request.build_opener(handler)
     urllib.request.install_opener(opener)
 
-    response = urllib.request.urlopen(url + f'forms/{secrets.form_hash}/entries.json?')
+    response = urllib.request.urlopen(url + f'forms/z1pdyem009hdgsr/entries.json?')  # gibberish is form's hash
     if response.code != 200:
         print(f"Request failed, form data not retrieved.\n"
               f"Response Code: {response.code}\n"
@@ -84,7 +84,7 @@ def get_response(url, api_key):
 
 def main():
     # Authentication formatting
-    base_url = 'https://{}.wufoo.com/api/v3/'.format(secrets.subdomain)
+    base_url = 'https://{}.wufoo.com/api/v3/'.format("jessethompson")   # name is the subdomain of Wufoo acct
     response = get_response(base_url, secrets.apikey)
     response_list = response["Entries"]
     with open("form_responses_file", 'w') as form_save:
