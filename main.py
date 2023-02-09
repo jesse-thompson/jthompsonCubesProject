@@ -1,32 +1,11 @@
 import urllib.request
 import sys
-import configparser
 import json
 import sqlite3
 from typing import Tuple
+import secrets
 
-config = configparser.ConfigParser()
-
-
-# the subdomain is the username for the Wufoo account
-# comment to test workflow
-def get_subdomain():
-    config.read('app.config')
-    subdomain_from_file = config['secrets']['subdomain']
-    return subdomain_from_file
-
-
-def get_apikey():
-    config.read('app.config')
-    apikey_from_file = config['secrets']['apikey']
-    return apikey_from_file
-
-
-# the form hash is the form ID
-def get_form_hash():
-    config.read('app.config')
-    form_hash_from_file = config['secrets']['form_hash']
-    return form_hash_from_file
+# TODO: finish readme
 
 
 def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
@@ -82,7 +61,7 @@ def make_responses_file(api_response: list, data_file=None):
 
 
 def get_response(url, api_key):
-    # Following code is adapted from Wufoo API documentation
+    # Following code is adapted, with slight modifications, from Wufoo API documentation
     # Authentication for requests
     password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
     password_manager.add_password(None, url, api_key, "nonsense")  # nonsense is 'password' that isn't checked
@@ -92,7 +71,7 @@ def get_response(url, api_key):
     opener = urllib.request.build_opener(handler)
     urllib.request.install_opener(opener)
 
-    response = urllib.request.urlopen(url + f'forms/{get_form_hash()}/entries.json?')
+    response = urllib.request.urlopen(url + f'forms/{secrets.form_hash}/entries.json?')
     if response.code != 200:
         print(f"Request failed, form data not retrieved.\n"
               f"Response Code: {response.code}\n"
@@ -106,9 +85,8 @@ def get_response(url, api_key):
 
 def main():
     # Authentication formatting
-    base_url = 'https://{}.wufoo.com/api/v3/'.format(get_subdomain())
-    username = get_apikey()
-    response = get_response(base_url, username)
+    base_url = 'https://{}.wufoo.com/api/v3/'.format(secrets.subdomain)
+    response = get_response(base_url, secrets.apikey)
     response_list = response["Entries"]
     with open("form_responses_file", 'w') as form_save:
         make_responses_file(response_list, data_file=form_save)

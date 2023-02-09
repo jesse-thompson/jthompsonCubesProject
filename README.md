@@ -2,9 +2,9 @@
 
 <h3>Instructions:</h3>
 
-- app.config.template is not meant to be used in production, but is to be
-used as a template for holding secrets and configuration data in app.config
-- In app.config, form_hash is the identifier of the 
+- secrets.template is to be used as a template for 
+holding secrets and configuration data in a file "secrets.py"
+- In secrets.py, form_hash is the identifier of the 
 Wufoo form and is found in API Information.
 - Wufoo form: https://jessethompson.wufoo.com/forms/z1pdyem009hdgsr/
 
