@@ -7,7 +7,7 @@ import pytest
 # Compares retrieved number of entries to expected number of entries
 def test_entry_retrieval():
     total_entries = 13
-    url = 'https://{}.wufoo.com/api/v3/'.format(secrets.subdomain)
+    url = 'https://{}.wufoo.com/api/v3/'.format("jessethompson")
     retrieved_entries = main.get_response(url, secrets.apikey)
     assert len(retrieved_entries['Entries']) == total_entries
 
@@ -29,6 +29,5 @@ def test_database_entry():
 
     assert num_entries == total_entries
     main.close_db(conn)
-
 
 # TODO: ensure tests work on GitHub Actions
