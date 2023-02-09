@@ -69,7 +69,7 @@ def get_response(url, api_key):
     opener = urllib.request.build_opener(handler)
     urllib.request.install_opener(opener)
 
-    response = urllib.request.urlopen(url + f'forms/z1pdyem009hdgsr/entries.json?')  # gibberish is form's hash
+    response = urllib.request.urlopen(url + 'forms/z1pdyem009hdgsr/entries.json?')  # gibberish is form's hash
     if response.code != 200:
         print(f"Request failed, form data not retrieved.\n"
               f"Response Code: {response.code}\n"
