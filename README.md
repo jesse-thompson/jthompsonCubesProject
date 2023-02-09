@@ -3,12 +3,13 @@
 <h3>Instructions:</h3>
 
 - secrets.template is to be used as a template for 
-holding secrets and configuration data in a file "secrets.py"
-- In secrets.py, form_hash is the identifier of the 
-Wufoo form and is found in API Information.
+holding the API key in a file "secrets.py"
 - Wufoo form: https://jessethompson.wufoo.com/forms/z1pdyem009hdgsr/
 
 <h3>Description:</h3>
 
-This program will retrieve the data entered into a Wufoo form and save it into a
-file in an easily readable format and then print from that file.
+This program retrieves the data entries of a Wufoo form and save it into a
+SQL database.<br>
+The database consists of a single table and is and contains all entry data retrieved from the server.
+The order of organization is the same as it is retrieved.
+The field names are adapted to be easily understood.
