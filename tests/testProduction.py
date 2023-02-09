@@ -1,7 +1,5 @@
 import main
 import secrets
-import sqlite3
-import pytest
 
 
 # Compares retrieved number of entries to expected number of entries
