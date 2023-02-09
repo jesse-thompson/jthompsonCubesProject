@@ -2,3 +2,4 @@
 /.idea
 app.config
 form_responses_file
+*.db
