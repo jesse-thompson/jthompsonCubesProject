@@ -68,10 +68,9 @@ def input_entries(table: str):
         data_tuples = zip(*it)
 
         conn, cursor = open_db(table)
-        cursor.executemany('''INSERT INTO entries 
+        cursor.executemany('''INSERT OR IGNORE INTO entries 
                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', data_tuples)
         close_db(conn)
-    # TODO: prevent UNIQUE constraint failure
 
 
 # parses the raw response, creates file, and saves data from response in easily referenced format

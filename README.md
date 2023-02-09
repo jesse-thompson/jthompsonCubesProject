@@ -4,6 +4,8 @@
 
 - In app.config, form_hash is the identifier of the 
 Wufoo form and is found in API Information.
+- app.comfig.template is not meant to be used in production, but is to be
+used as a template for holding secrets in app.config
 - Wufoo form: https://jessethompson.wufoo.com/forms/z1pdyem009hdgsr/
 
 <h3>Description:</h3>
