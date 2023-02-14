@@ -1,11 +1,12 @@
 import main
+import database
 import secrets
 
 
 # Compares retrieved number of entries to expected number of entries
 def test_entry_retrieval():
     total_entries = 13
-    url = 'https://{}.wufoo.com/api/v3/'.format("jessethompson")
+    url = 'https://jessethompson.wufoo.com/api/v3/'
     retrieved_entries = main.get_response(url, secrets.apikey)
     assert len(retrieved_entries['Entries']) == total_entries
 
@@ -20,13 +21,13 @@ def test_database_entry():
 
     main.make_response_database('testing.db')
     main.input_entries('test_file', 'testing.db')
-    conn, cursor = main.open_db('testing.db')
+    conn, cursor = database.open_db('testing.db')
 
     found_entries = cursor.execute('SELECT * FROM entries')
     num_entries = len(found_entries.fetchall())
 
     assert num_entries == total_entries
-    main.close_db(conn)
+    database.close_db(conn)
 
 # TODO: Test for filling correct data
 # TODO: Test to ensure the data is in the table
