@@ -55,7 +55,6 @@ def make_responses_file(api_response: list, data_file=None):
     for entry in api_response:
         for key, value in entry.items():
             print(f"{value}", file=data_file)
-        # print("+++\n___", file=data_file)  # separator
 
 
 def get_response(url, api_key):
@@ -95,3 +94,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# TODO: Add basic GUI functionality
+# TODO: GUI shows list of entries with short versions
+# TODO: GUI shows selected entry
+# TODO: Ensure widgets are not editable

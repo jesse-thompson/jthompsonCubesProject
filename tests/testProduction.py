@@ -28,4 +28,6 @@ def test_database_entry():
     assert num_entries == total_entries
     main.close_db(conn)
 
-# TODO: ensure tests work on GitHub Actions
+# TODO: Test for filling correct data
+# TODO: Test to ensure the data is in the table
+# TODO: Ensure all new and old tests including lint work in GitHub

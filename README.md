@@ -13,3 +13,5 @@ SQL database.<br>
 The database consists of a single table and is and contains all entry data retrieved from the server.
 The order of organization is the same as it is retrieved.
 The field names are adapted to be easily understood.
+
+# TODO: Update README
