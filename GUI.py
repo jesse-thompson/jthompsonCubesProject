@@ -9,60 +9,29 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-# db = QSqlDatabase.addDatabase("QSQLITE")
-# db.setDatabaseName("wufoo_entries.db")
+# establish connection to SQL db
+db_connection = QSqlDatabase.addDatabase("QSQLITE")   # QSQLITE is the name of the driver
+db_connection.setDatabaseName("wufoo_entries.db")
+
+cubes_app = QApplication(sys.argv)
+
+
+# Tries to open the connection. Handles errors with an error message
+if not db_connection.open():
+    QMessageBox.critical(None, "Cubes Project List - Error!",
+                         "Database Error: %s" % db_connection.lastError().databaseText(),)
+    sys.exit(1)
+db_connection.close()
+
+
+window = QLabel("Connection established")
+window.setWindowTitle("Cubes Project List")
+window.resize(500, 500)
+window.show()
+sys.exit(cubes_app.exec_())
+
 # query = QtSql.QSqlQuery()
 # entries = query.exec('SELECT * FROM entries')
-
-def initializeModel(model):
-   model.setTable('sportsmen')
-   model.setEditStrategy(QSqlTableModel.OnFieldChange)
-   model.select()
-   model.setHeaderData(0, Qt.Horizontal, "ID")
-   model.setHeaderData(1, Qt.Horizontal, "First name")
-   model.setHeaderData(2, Qt.Horizontal, "Last name")
-
-def createView(title, model):
-   view = QTableView()
-   view.setModel(model)
-   view.setWindowTitle(title)
-   return view
-
-def addrow():
-   print (model.rowCount())
-   ret = model.insertRows(model.rowCount(), 1)
-   print (ret)
-
-def findrow(i):
-   delrow = i.row()
-
-if __name__ == '__main__':
-   app = QApplication(sys.argv)
-   db = QSqlDatabase.addDatabase('QSQLITE')
-   db.setDatabaseName('sportsdatabase.db')
-   model = QSqlTableModel()
-   delrow = -1
-   initializeModel(model)
-
-   view1 = createView("Table Model (View 1)", model)
-   view1.clicked.connect(findrow)
-
-   dlg = QDialog()
-   layout = QVBoxLayout()
-   layout.addWidget(view1)
-
-   button = QPushButton("Add a row")
-   button.clicked.connect(addrow)
-   layout.addWidget(button)
-
-   btn1 = QPushButton("del a row")
-   btn1.clicked.connect(lambda: model.removeRow(view1.currentIndex().row()))
-   layout.addWidget(btn1)
-
-   dlg.setLayout(layout)
-   dlg.setWindowTitle("Database Demo")
-   dlg.show()
-   sys.exit(app.exec_())
 
 
 # def setup_gui(self, main_window):
@@ -86,7 +55,6 @@ if __name__ == '__main__':
 #         msgLabel.setText("Hello, World!")
 
 
-# cubes_app = QApplication([])
 # window = QWidget()
 # window.setWindowTitle("Cubes Project List")
 # layout = QVBoxLayout()
