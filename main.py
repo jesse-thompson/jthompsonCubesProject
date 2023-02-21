@@ -16,7 +16,7 @@ def main():
     make_response_database('wufoo_entries.db')
     input_entries('form_responses_file', 'wufoo_entries.db')
 
-    GUI.build_gui()
+    # GUI.build_gui()
 
 
 if __name__ == '__main__':
