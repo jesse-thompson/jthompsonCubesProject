@@ -15,23 +15,37 @@ class WufooEntries(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle("Cubes Project List")
         self.resize(500, 500)
+        self.centralWidget = QWidget()
+        self.setCentralWidget(self.centralWidget)
+        self.layout = QVBoxLayout(self.centralWidget)
+        query = QSqlQuery("""SELECT * from ENTRIES""")
         self.view = QTableWidget()
-        self.view.setColumnCount(21)
-        self.view.setHorizontalHeaderLabels(["Prefix", "First Name", "Last Name", "Title", "Org Name", "Email",
-                                             "Org Site", "Phone", "int1", "int2", "int3", "int4", "int5", "in6",
-                                             "int7", "col time1", "col time2", "col time3", "col time4",
-                                             "col time5", "Permission"])
-        query = QSqlQuery("""SELECT prefix, f_name, l_name, title, org_name, email, org_site, phone, interest1, 
-        interest2, interest3, interest4, interest5, interest6, interest7, colTime1, colTime2, colTime3, colTime4, 
-        colTime5, permission_grant from ENTRIES""")
+
+        index = query.record().indexOf('org_name')
         while query.next():
-            rows = self.view.rowCount()
-            self.view.setRowCount(rows + 1)
-            self.view.setItem(rows, 0, QTableWidgetItem(str(query.value(0))))
-            for col_num in range(1, 21):
-                self.view.setItem(rows, col_num, QTableWidgetItem(query.value(col_num)))
-        self.view.resizeColumnsToContents()
-        self.setCentralWidget(self.view)
+            self.button = QPushButton(str(query.value(index)), self)
+            self.button.clicked.connect(self.on_click)
+            self.layout.addWidget(self.button)
+
+        self.show()
+
+        # self.view.setColumnCount(21)
+        # self.view.setHorizontalHeaderLabels(["Prefix", "First Name", "Last Name", "Title", "Org Name", "Email",
+        #                                      "Org Site", "Phone", "int1", "int2", "int3", "int4", "int5", "in6",
+        #                                      "int7", "col time1", "col time2", "col time3", "col time4",
+        #                                      "col time5", "Permission"])
+        # while query.next():
+        #     rows = self.view.rowCount()
+        #     self.view.setRowCount(rows + 1)
+        #     self.view.setItem(rows, 0, QTableWidgetItem(str(query.value(0))))
+        #     for col_num in range(1, 21):
+        #         self.view.setItem(rows, col_num, QTableWidgetItem(query.value(col_num)))
+        # self.view.resizeColumnsToContents()
+        # self.setCentralWidget(self.view)
+
+    @pyqtSlot()
+    def on_click(self):
+        print('clicked')
 
 
 # establish connection to SQL db
