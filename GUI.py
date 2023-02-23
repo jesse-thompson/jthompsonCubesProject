@@ -2,6 +2,7 @@
 # TODO: GUI shows list of entries with short versions
 # TODO: GUI shows selected entry
 # TODO: Ensure widgets are not editable
+import subprocess
 import sys
 from PyQt5 import QtSql
 from PyQt5.QtSql import *
@@ -22,10 +23,17 @@ class WufooEntries(QMainWindow):
         self.view = QTableWidget()
 
         index = query.record().indexOf('org_name')
+        org_names = []
+        i = 0
         while query.next():
+            org_names.append(str(query.value(index)))
+            print(org_names[i])
             self.button = QPushButton(str(query.value(index)), self)
-            self.button.clicked.connect(self.on_click)
+            self.button.setStyleSheet("QPushButton {background-color : blue;}")
+            # self.button.setCheckable(True)
+            self.button.clicked.connect(lambda: self.on_click(org_names[i]))
             self.layout.addWidget(self.button)
+            i += 1
 
         self.show()
 
@@ -34,7 +42,7 @@ class WufooEntries(QMainWindow):
         #                                      "Org Site", "Phone", "int1", "int2", "int3", "int4", "int5", "in6",
         #                                      "int7", "col time1", "col time2", "col time3", "col time4",
         #                                      "col time5", "Permission"])
-        # while query.next():
+        # while query.next():   # creates table
         #     rows = self.view.rowCount()
         #     self.view.setRowCount(rows + 1)
         #     self.view.setItem(rows, 0, QTableWidgetItem(str(query.value(0))))
@@ -44,8 +52,9 @@ class WufooEntries(QMainWindow):
         # self.setCentralWidget(self.view)
 
     @pyqtSlot()
-    def on_click(self):
-        print('clicked')
+    def on_click(self, button_text):
+
+        print(button_text)
 
 
 # establish connection to SQL db
