@@ -24,16 +24,13 @@ class WufooEntries(QMainWindow):
 
         index = query.record().indexOf('org_name')
         org_names = []
-        i = 0
         while query.next():
             org_names.append(str(query.value(index)))
-            print(org_names[i])
             self.button = QPushButton(str(query.value(index)), self)
             self.button.setStyleSheet("QPushButton {background-color : blue;}")
-            # self.button.setCheckable(True)
-            self.button.clicked.connect(lambda: self.on_click(org_names[i]))
+            self.button.clicked.connect(lambda: self.on_click(self.button.text()))
             self.layout.addWidget(self.button)
-            i += 1
+            print(self.button.text())
 
         self.show()
 
