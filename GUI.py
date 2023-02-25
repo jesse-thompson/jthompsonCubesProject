@@ -23,14 +23,13 @@ class WufooEntries(QMainWindow):
         self.view = QTableWidget()
 
         index = query.record().indexOf('org_name')
-        org_names = []
+        dic = {}
         while query.next():
-            org_names.append(str(query.value(index)))
+            globals()['button%s' % x] = 'Hello'
             self.button = QPushButton(str(query.value(index)), self)
             self.button.setStyleSheet("QPushButton {background-color : blue;}")
-            self.button.clicked.connect(lambda: self.on_click(self.button.text()))
+            self.button.clicked.connect(lambda: self.on_click("{}".format(query.record())))
             self.layout.addWidget(self.button)
-            print(self.button.text())
 
         self.show()
 
