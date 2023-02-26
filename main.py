@@ -8,6 +8,7 @@ import GUI
 
 def display_gui():
     cubes_app = PyQt5.QtWidgets.QApplication(sys.argv)  # sys.argv is the list of command line arguments
+    GUI.make_connection()
     window = GUI.WufooEntries()
     window.show()
     sys.exit(cubes_app.exec())

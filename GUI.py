@@ -31,22 +31,22 @@ class WufooEntries(QWidget):
         self.make_window()
 
     def on_click(self, item):
-        # query1 = QSqlQuery('SELECT * FROM entries')
-        # position = QLabel(query1.record())
-        pass
+        query1 = QSqlQuery('SELECT title FROM entries')
+        position = query1.value(3)
+        print(position)
 
     def make_window(self):
         self.setWindowTitle("Cubes Project List")
         self.setGeometry(750, 100, 900, 200)
-        if not make_connection():
-            sys.exit(1)
+        # if not make_connection():
+        #     sys.exit(1)
 
-        view = QListWidget
+        view = QListWidget(self)
 
         query = QSqlQuery('SELECT * FROM entries')
         index = query.record().indexOf('org_name')
         while query.next():
             view.addItem(str(query.value(index)))
 
-        view.itemClicked.connect(view.on_click)
+        view.itemClicked.connect(self.on_click)
 
