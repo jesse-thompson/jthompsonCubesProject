@@ -23,26 +23,30 @@ def make_connection():
     return True
 
 
-class WufooEntries(QListWidget):
+class WufooEntries(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.db = QSqlQuery('SELECT * FROM entries')
+        self.make_window()
 
     def on_click(self, item):
-        query1 = QSqlQuery('SELECT * FROM entries')
-        position = QLabel(query1.record())
+        # query1 = QSqlQuery('SELECT * FROM entries')
+        # position = QLabel(query1.record())
+        pass
 
-    if not make_connection():
-        sys.exit(1)
+    def make_window(self):
+        self.setWindowTitle("Cubes Project List")
+        self.setGeometry(750, 100, 900, 200)
+        if not make_connection():
+            sys.exit(1)
 
-    view = QListWidget
-    view.resize(1000, 500)
+        view = QListWidget
 
-    query = QSqlQuery('SELECT * FROM entries')
-    index = query.record().indexOf('org_name')
-    while query.next():
-        view.addItem(str(query.value(index)))
+        query = QSqlQuery('SELECT * FROM entries')
+        index = query.record().indexOf('org_name')
+        while query.next():
+            view.addItem(str(query.value(index)))
 
-    view.setWindowTitle('Cubes Project List')
-    view.itemClicked.connect(view.on_click)
+        view.itemClicked.connect(view.on_click)
 
-    view.show()
-
-    # sys.exit(cubes_app.exec_())

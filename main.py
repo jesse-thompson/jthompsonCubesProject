@@ -6,9 +6,10 @@ from database import make_response_database, input_entries
 import GUI
 
 
-def display_gui(data: list):
+def display_gui():
     cubes_app = PyQt5.QtWidgets.QApplication(sys.argv)  # sys.argv is the list of command line arguments
-    window = GUI.WufooEntries(data)
+    window = GUI.WufooEntries()
+    window.show()
     sys.exit(cubes_app.exec())
 
 
