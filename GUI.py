@@ -31,22 +31,33 @@ class WufooEntries(QWidget):
         self.make_window()
 
     def on_click(self, item):
-        query1 = QSqlQuery('SELECT title FROM entries')
-        position = query1.value(3)
-        print(position)
+        click_query = QSqlQuery('SELECT * FROM entries')
+        click_query.next()
+        while str(click_query.value('org_name')) != item.text():
+            click_query.next()
+        position = str(click_query.value('title'))
+        prefix = str(click_query.value('prefix'))
+        f_name = str(click_query.value('f_name'))
+        l_name = str(click_query.value('l_name'))
+        org_name = str(click_query.value('org_name'))
+        email = str(click_query.value('email'))
+        QMessageBox.information(self, "ListWidget", f"{position} {prefix} {f_name} {l_name} {org_name} {email}")
+        print(f"{position} {prefix} {f_name} {l_name} {org_name} {email}")
 
     def make_window(self):
         self.setWindowTitle("Cubes Project List")
-        self.setGeometry(750, 100, 900, 200)
-        # if not make_connection():
-        #     sys.exit(1)
+        self.setGeometry(750, 100, 900, 500)
 
-        view = QListWidget(self)
+        # building the selection based on org names
+        list_of_orgs = QListWidget(self)
+        build_query = QSqlQuery('SELECT * FROM entries')
+        index = build_query.record().indexOf('org_name')
+        while build_query.next():
+            list_of_orgs.addItem(str(build_query.value(index)))
+        list_of_orgs.itemClicked.connect(self.on_click)
+        list_of_orgs.move(10, 10)
 
-        query = QSqlQuery('SELECT * FROM entries')
-        index = query.record().indexOf('org_name')
-        while query.next():
-            view.addItem(str(query.value(index)))
+        # table_of_details = QListWidget
+        # position = QLabel('Position')
 
-        view.itemClicked.connect(self.on_click)
 
