@@ -2,7 +2,7 @@ import GUI
 from secrets import apikey  # requires a secrets file in place of "secrets.template"
 from dataRetrieval import get_response, make_responses_file
 from database import make_response_database, input_entries
-from GUI import build_gui
+from GUI import cubes_app
 
 
 def main():
@@ -16,7 +16,7 @@ def main():
     make_response_database('wufoo_entries.db')
     input_entries('form_responses_file', 'wufoo_entries.db')
 
-    # GUI.build_gui()
+    GUI.cubes_app do the thing
 
 
 if __name__ == '__main__':

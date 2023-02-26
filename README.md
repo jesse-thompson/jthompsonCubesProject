@@ -14,4 +14,7 @@ The database consists of a single table and is and contains all entry data retri
 The order of organization is the same as it is retrieved.
 The field names are adapted to be easily understood.
 
-# TODO: Update README
+It might do some things with a GUI, but probably not much.
+
+The tests on GitHub Actions definitely don't work, even if there are any tests for the GUI, 
+which there probably aren't.
