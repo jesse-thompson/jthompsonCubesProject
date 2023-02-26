@@ -1,8 +1,15 @@
-import GUI
+import sys
+import PyQt5
 from secrets import apikey  # requires a secrets file in place of "secrets.template"
 from dataRetrieval import get_response, make_responses_file
 from database import make_response_database, input_entries
-from GUI import cubes_app
+import GUI
+
+
+def display_gui(data: list):
+    cubes_app = PyQt5.QtWidgets.QApplication(sys.argv)  # sys.argv is the list of command line arguments
+    window = GUI.WufooEntries(data)
+    sys.exit(cubes_app.exec())
 
 
 def main():
@@ -15,8 +22,7 @@ def main():
 
     make_response_database('wufoo_entries.db')
     input_entries('form_responses_file', 'wufoo_entries.db')
-
-    GUI.cubes_app do the thing
+    display_gui()
 
 
 if __name__ == '__main__':

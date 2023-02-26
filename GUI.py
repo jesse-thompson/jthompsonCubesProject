@@ -26,27 +26,23 @@ def make_connection():
 class WufooEntries(QListWidget):
 
     def on_click(self, item):
+        query1 = QSqlQuery('SELECT * FROM entries')
+        position = QLabel(query1.record())
 
-        QMessageBox.warning(self, "ListWidget", "clicked: " + item.text())
+    if not make_connection():
+        sys.exit(1)
 
+    view = QListWidget
+    view.resize(1000, 500)
 
-cubes_app = QApplication([])    # empty list to prevent configurations of PyQt from terminal
-if not make_connection():
-    sys.exit(1)
+    query = QSqlQuery('SELECT * FROM entries')
+    index = query.record().indexOf('org_name')
+    while query.next():
+        view.addItem(str(query.value(index)))
 
-view = WufooEntries()
-view.resize(1000, 500)
+    view.setWindowTitle('Cubes Project List')
+    view.itemClicked.connect(view.on_click)
 
-query = QSqlQuery('SELECT * FROM entries')
-index = query.record().indexOf('org_name')
-while query.next():
-    view.addItem(str(query.value(index)))
+    view.show()
 
-
-
-view.setWindowTitle('Cubes Project List')
-view.itemClicked.connect(view.on_click)
-
-view.show()
-
-sys.exit(cubes_app.exec_())
+    # sys.exit(cubes_app.exec_())

@@ -16,5 +16,4 @@ The field names are adapted to be easily understood.
 
 It might do some things with a GUI, but probably not much.
 
-The tests on GitHub Actions definitely don't work, even if there are any tests for the GUI, 
-which there probably aren't.
+The tests on GitHub Actions definitely don't work, even if there are any tests for the GUI, which there probably aren't.
