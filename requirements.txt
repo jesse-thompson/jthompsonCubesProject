@@ -1,2 +1,7 @@
-pytest~=7.2.0
-pyQt5
+requests
+fastapi
+uvicorn
+pydantic
+pathlib
+pyside6
+pytest-qt

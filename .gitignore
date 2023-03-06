@@ -3,3 +3,4 @@
 *file
 secrets.py
 *.db
+/cubesProject.sqlite
