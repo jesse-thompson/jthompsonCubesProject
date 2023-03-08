@@ -50,11 +50,15 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check: QCheckBox = None
         self.other_check: QCheckBox = None
         self.permission_granted: QLineEdit = None
-        self.claimed_by: QLineEdit = "Not Claimed"
+        self.claimed_by: QLineEdit = None
+        self.claim_button = QPushButton("Click to claim proposal")
+        # self.claim_button.clicked.connect()
+        self.name_box: QLineEdit = None
+        self.save_button = QPushButton("Save")
+
         self.setup_window()
 
     def setup_window(self):
-        self.setWindowTitle("GUI Demo for Capstone")
         main_layout = QHBoxLayout()
         self.list_control = QListWidget()
         left_pane = QVBoxLayout()
@@ -68,6 +72,8 @@ class WuFooEntriesWindow(QWidget):
         quit_button.clicked.connect(QApplication.instance().quit)
         left_pane.addWidget(quit_button)
         main_layout.addLayout(right_pane)
+        bottom_pane = self.build_bottom_pane()
+        main_layout.addLayout(bottom_pane)
         self.setLayout(main_layout)
         self.show()
 
@@ -142,15 +148,28 @@ class WuFooEntriesWindow(QWidget):
         self.permission_granted = QLineEdit()
         self.permission_granted.setReadOnly(True)
         one_liners_pane.addWidget(self.permission_granted, 4, 1)
-        one_liners_pane.addWidget(QLabel("Claimed By:"), 4, 2)
-        self.claimed_by = QLineEdit()
-        self.claimed_by.setReadOnly(True)
-        one_liners_pane.addWidget(self.claimed_by, 4, 3)
-        # TODO: add button for claiming proposal
 
-        bottom_pane = QHBoxLayout()
-        right_pane.addLayout(bottom_pane)
         return right_pane
+
+    def build_bottom_pane(self) -> QLayout:
+        bottom_pane = QVBoxLayout()
+        b_pane_layout = QGridLayout()
+        bottom_pane.addLayout(b_pane_layout)
+        b_pane_layout.addWidget(QLabel("Name:"), 0, 0)
+        self.name_box = QLineEdit()
+        # self.name_box.setReadOnly(False)
+        b_pane_layout.addWidget(self.name_box, 0, 1)
+        b_pane_layout.addWidget(QLabel("Claimed By:"), 1, 0)
+        self.claimed_by = QLineEdit()
+        # self.claimed_by.setReadOnly(True)
+        b_pane_layout.addWidget(self.claimed_by, 1, 1)
+        b_pane_layout.addWidget(self.claim_button, 2, 0)
+        b_pane_layout.addWidget(self.save_button, 4, 0)
+
+        return bottom_pane
+
+    # def make_fields_writable(self):
+
 
     def get_cubes_data_from_db(self) -> list:
         with CubesDB(db_name) as cursor:
@@ -185,4 +204,4 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check.setChecked(not not selected_data["summer2023"])
         self.other_check.setChecked(not not selected_data["other"])
         self.permission_granted.setText(selected_data["permission_granted"])
-        self.claimed_by.setText(selected_data["email"])
+        self.claimed_by.setText(selected_data["claimed_by"])

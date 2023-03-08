@@ -40,7 +40,8 @@ def create_entries_table(cursor: sqlite3.Cursor):
     other BOOLEAN,
     permission_granted TEXT,
     date_created TEXT,
-    created_by TEXT);"""
+    created_by TEXT,
+    claimed_by TEXT);"""
     cursor.execute(create_statement)
 
 

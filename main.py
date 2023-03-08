@@ -15,7 +15,7 @@ db_name = "cubesProject.sqlite"
 def sprint2():  # comment for force workflow
     json_response = getData.get_wufoo_data()
     entries_list = json_response["Entries"]
-    print(entries_list[10])
+    # print(entries_list[10])
     conn, cursor = open_db(db_name)
     DatabaseStuff.create_entries_table(cursor)
     DatabaseStuff.add_entries_to_db(cursor, entries_list)
