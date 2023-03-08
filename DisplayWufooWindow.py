@@ -1,3 +1,5 @@
+# Code from Dr. John F. Santore's Sprint 3 Instructor Demo used as basis for Sprint 4
+
 import sys
 
 import requests
@@ -20,9 +22,6 @@ from PySide6.QtWidgets import (
 
 from main import db_name
 from serverDB import CubesDB
-
-# data_url = " http://127.0.0.1:8000"  # you can put yours in your secrets file so that people don't hit your server
-# to test their programs
 
 
 class WuFooEntriesWindow(QWidget):
@@ -51,6 +50,7 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check: QCheckBox = None
         self.other_check: QCheckBox = None
         self.permission_granted: QLineEdit = None
+        self.claimed_by: QLineEdit = "Not Claimed"
         self.setup_window()
 
     def setup_window(self):
@@ -142,7 +142,11 @@ class WuFooEntriesWindow(QWidget):
         self.permission_granted = QLineEdit()
         self.permission_granted.setReadOnly(True)
         one_liners_pane.addWidget(self.permission_granted, 4, 1)
-
+        one_liners_pane.addWidget(QLabel("Claimed By:"), 4, 2)
+        self.claimed_by = QLineEdit()
+        self.claimed_by.setReadOnly(True)
+        one_liners_pane.addWidget(self.claimed_by, 4, 3)
+        # TODO: add button for claiming proposal
 
         bottom_pane = QHBoxLayout()
         right_pane.addLayout(bottom_pane)
@@ -181,3 +185,4 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check.setChecked(not not selected_data["summer2023"])
         self.other_check.setChecked(not not selected_data["other"])
         self.permission_granted.setText(selected_data["permission_granted"])
+        self.claimed_by.setText(selected_data["email"])

@@ -1,3 +1,5 @@
+# Code from Dr. John F. Santore's Sprint 3 Instructor Demo used as basis for Sprint 4
+
 from main import db_name, sprint2
 import sqlite3
 

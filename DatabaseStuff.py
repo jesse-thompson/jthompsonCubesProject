@@ -1,3 +1,5 @@
+# Code from Dr. John F. Santore's Sprint 3 Instructor Demo used as basis for Sprint 4
+
 import sqlite3
 from typing import Tuple
 

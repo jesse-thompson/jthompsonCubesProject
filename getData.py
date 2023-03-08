@@ -1,3 +1,5 @@
+# Code from Dr. John F. Santore's Sprint 3 Instructor Demo used as basis for Sprint 4
+
 import requests
 import sys
 from secrets import wufoo_key  # add a secrets file with wufoo_key='YoUr-WuFoo-KeY-Here'
