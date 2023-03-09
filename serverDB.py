@@ -1,6 +1,6 @@
 # Code from Dr. John F. Santore's Sprint 3 Instructor Demo used as basis for Sprint 4
 
-from main import db_name, sprint2
+from main import db_name, update_db
 import sqlite3
 
 
@@ -21,7 +21,7 @@ class CubesDB:
     def __init__(self, file=db_name):
         self.db_file = file
         if not does_table_exists():
-            sprint2()
+            update_db()
 
     def __enter__(self):
         self.conn = sqlite3.connect(self.db_file)

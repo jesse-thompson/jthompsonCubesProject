@@ -2,6 +2,9 @@
 
 import sqlite3
 from typing import Tuple
+# from main import db_name
+
+db_name = "cubesProject.sqlite"
 
 
 def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
@@ -41,7 +44,17 @@ def create_entries_table(cursor: sqlite3.Cursor):
     permission_granted TEXT,
     date_created TEXT,
     created_by TEXT,
-    claimed_by TEXT);"""
+    claimed_by TEXT);"""    # claimed_by is the foreign key with email of the person who claimed the proposal
+    cursor.execute(create_statement)
+
+
+def create_claim_table(cursor: sqlite3.Cursor):
+    create_statement = """CREATE TABLE IF NOT EXISTS Claims(
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    title TEXT,
+    email TEXT PRIMARY KEY,
+    department TEXT);"""
     cursor.execute(create_statement)
 
 
@@ -56,3 +69,11 @@ def add_entries_to_db(cursor: sqlite3.Cursor, entries_data: list[dict]):
         entry_values[0] = int(entry_values[0])  # the EntryID is a string, but I want it to be a number
         entry_values = entry_values[:-2]
         cursor.execute(insert_statement, entry_values)
+
+
+def add_claims_to_db(column: str, claims_value: str):
+    conn, cursor = open_db(db_name)
+    insert_statement = f"""INSERT OR IGNORE INTO Claims ({column})
+    VALUES(?)"""
+    cursor.execute(insert_statement, claims_value)
+    close_db(conn)

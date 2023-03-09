@@ -12,17 +12,18 @@ import getData
 db_name = "cubesProject.sqlite"
 
 
-def sprint2():  # comment for force workflow
+def update_db():  # comment for force workflow
     json_response = getData.get_wufoo_data()
     entries_list = json_response["Entries"]
     # print(entries_list[10])
     conn, cursor = open_db(db_name)
     DatabaseStuff.create_entries_table(cursor)
     DatabaseStuff.add_entries_to_db(cursor, entries_list)
+    DatabaseStuff.create_claim_table(cursor)
     close_db(conn)
 
 
-def sprint3():
+def show_gui():
     qt_app = PySide6.QtWidgets.QApplication(sys.argv)  # sys.argv is the list of command line arguments
     my_window = DisplayWufooWindow.WuFooEntriesWindow()
     my_window.setWindowTitle("CUBES Project")
@@ -40,9 +41,9 @@ def main():
     show_options()
     answer = input("Please enter your choice: ")
     if answer == "1":
-        sprint2()
+        update_db()
     elif answer == "2":
-        sprint3()
+        show_gui()
     else:
         print("Invalid Entry, ending program...")
         sys.exit(0)  # exit successfully

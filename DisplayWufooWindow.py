@@ -18,16 +18,20 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QCheckBox,
+    QInputDialog
 )
 
+import DatabaseStuff
 from main import db_name
 from serverDB import CubesDB
+from DatabaseStuff import add_claims_to_db
 
 
 class WuFooEntriesWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.data = self.get_cubes_data_from_db()
+        self.wufoo_data = self.get_cubes_data_from_db()
+        self.claim_data = self.get_claim_data_from_db()
         self.list_control: QListWidget = None
         self.data_window = None
         self.prefix_box: QLineEdit = None
@@ -50,11 +54,14 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check: QCheckBox = None
         self.other_check: QCheckBox = None
         self.permission_granted: QLineEdit = None
-        self.claimed_by: QLineEdit = None
+        self.claimed_by: QLabel = None
         self.claim_button = QPushButton("Click to claim proposal")
-        # self.claim_button.clicked.connect()
-        self.name_box: QLineEdit = None
-        self.save_button = QPushButton("Save")
+
+        self.fname_box_claims: QInputDialog = None
+        self.lname_box_claims: QInputDialog = None
+        self.title_box_claims: QInputDialog = None
+        self.email_box_claims: QInputDialog = None
+        self.department_box: QInputDialog = None
 
         self.setup_window()
 
@@ -67,7 +74,7 @@ class WuFooEntriesWindow(QWidget):
         right_pane = self.build_right_pane()
         self.list_control.resize(400, 400)
         self.list_control.currentItemChanged.connect(self.wufoo_entry_selected)
-        self.put_data_in_list(self.data)
+        self.put_data_in_list(self.wufoo_data)
         quit_button = QPushButton("Quit")
         quit_button.clicked.connect(QApplication.instance().quit)
         left_pane.addWidget(quit_button)
@@ -151,29 +158,38 @@ class WuFooEntriesWindow(QWidget):
 
         return right_pane
 
-    def build_bottom_pane(self) -> QLayout:
+    def build_bottom_pane(self) -> QLayout:  # not actually on the bottom, at least not yet
         bottom_pane = QVBoxLayout()
         b_pane_layout = QGridLayout()
         bottom_pane.addLayout(b_pane_layout)
-        b_pane_layout.addWidget(QLabel("Name:"), 0, 0)
-        self.name_box = QLineEdit()
-        # self.name_box.setReadOnly(False)
-        b_pane_layout.addWidget(self.name_box, 0, 1)
-        b_pane_layout.addWidget(QLabel("Claimed By:"), 1, 0)
-        self.claimed_by = QLineEdit()
-        # self.claimed_by.setReadOnly(True)
-        b_pane_layout.addWidget(self.claimed_by, 1, 1)
-        b_pane_layout.addWidget(self.claim_button, 2, 0)
-        b_pane_layout.addWidget(self.save_button, 4, 0)
+        b_pane_layout.addWidget(QLabel("Claimed By"), 0, 1)
+        b_pane_layout.addWidget(self.claim_button, 0, 2)
+        # self.claim_button.clicked.connect(DatabaseStuff.add_claims_to_db("email", self.email_box_claims.text()))
+        b_pane_layout.addWidget(QLabel("Name:"), 1, 0)
+        self.fname_box_claims = QLineEdit()
+        b_pane_layout.addWidget(self.fname_box_claims, 1, 1)
+        self.lname_box_claims = QLineEdit()
+        b_pane_layout.addWidget(self.lname_box_claims, 1, 2)
+        b_pane_layout.addWidget(QLabel("Title:"), 2, 0)
+        self.title_box_claims = QLineEdit()
+        b_pane_layout.addWidget(self.title_box_claims, 2, 1)
+        b_pane_layout.addWidget(QLabel("Email:"), 3, 0)
+        self.email_box_claims = QLineEdit()
+        b_pane_layout.addWidget(self.email_box_claims, 3, 1)
+        b_pane_layout.addWidget(QLabel("Department:"), 4, 0)
+        self.department_box = QLineEdit()
+        b_pane_layout.addWidget(self.department_box, 4, 1)
 
         return bottom_pane
-
-    # def make_fields_writable(self):
-
 
     def get_cubes_data_from_db(self) -> list:
         with CubesDB(db_name) as cursor:
             cursor.execute("""SELECT * FROM WuFooData""")
+            return cursor.fetchall()
+
+    def get_claim_data_from_db(self) -> list:
+        with CubesDB(db_name) as cursor:
+            cursor.execute("""SELECT * FROM Claims""")
             return cursor.fetchall()
 
     def put_data_in_list(self, data_to_add):
@@ -204,4 +220,10 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check.setChecked(not not selected_data["summer2023"])
         self.other_check.setChecked(not not selected_data["other"])
         self.permission_granted.setText(selected_data["permission_granted"])
+
+    def claim_data_selected(self, current: QListWidgetItem, previous: QListWidgetItem):
+        selected_data = current.data(2)
         self.claimed_by.setText(selected_data["claimed_by"])
+
+    # def get_text(self):
+    #     self.
