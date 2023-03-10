@@ -4,6 +4,7 @@ import sys
 
 import requests
 from PySide6.QtCore import Qt
+from PySide6 import QtGui
 from PySide6.QtWidgets import (
     QWidget,
     QPushButton,
@@ -18,13 +19,11 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QCheckBox,
-    QInputDialog
 )
 
-import DatabaseStuff
+from DatabaseStuff import add_claims_to_db, open_db, close_db
 from main import db_name
 from serverDB import CubesDB
-from DatabaseStuff import add_claims_to_db
 
 
 class WuFooEntriesWindow(QWidget):
@@ -34,6 +33,7 @@ class WuFooEntriesWindow(QWidget):
         self.claim_data = self.get_claim_data_from_db()
         self.list_control: QListWidget = None
         self.data_window = None
+        self.entry_id: int = None
         self.prefix_box: QLineEdit = None
         self.fname_box: QLineEdit = None
         self.lname_box: QLineEdit = None
@@ -54,14 +54,20 @@ class WuFooEntriesWindow(QWidget):
         self.summer2023_check: QCheckBox = None
         self.other_check: QCheckBox = None
         self.permission_granted: QLineEdit = None
-        self.claimed_by: QLabel = None
+
         self.claim_button = QPushButton("Click to claim proposal")
 
-        self.fname_box_claims: QInputDialog = None
-        self.lname_box_claims: QInputDialog = None
-        self.title_box_claims: QInputDialog = None
-        self.email_box_claims: QInputDialog = None
-        self.department_box: QInputDialog = None
+        self.fname_box_claims: QLineEdit = None
+        self.lname_box_claims: QLineEdit = None
+        self.title_box_claims: QLineEdit = None
+        self.email_box_claims: QLineEdit = None
+        self.department_box: QLineEdit = None
+
+        self.fname: str = None
+        self.lname: str = None
+        self.title: str = None
+        self.email: str = None
+        self.department: str = None
 
         self.setup_window()
 
@@ -74,6 +80,9 @@ class WuFooEntriesWindow(QWidget):
         right_pane = self.build_right_pane()
         self.list_control.resize(400, 400)
         self.list_control.currentItemChanged.connect(self.wufoo_entry_selected)
+        self.list_control.currentItemChanged.connect(self.claim_data_selected)
+        # for items in lis
+        # self.list_control.currentItemChanged.connect(self.change_color)
         self.put_data_in_list(self.wufoo_data)
         quit_button = QPushButton("Quit")
         quit_button.clicked.connect(QApplication.instance().quit)
@@ -88,6 +97,7 @@ class WuFooEntriesWindow(QWidget):
         right_pane = QVBoxLayout()
         one_liners_pane = QGridLayout()
         right_pane.addLayout(one_liners_pane)
+        self.entry_id = int
         one_liners_pane.addWidget(QLabel("Prefix:"), 0, 0)
         self.prefix_box = QLineEdit()
         self.prefix_box.setReadOnly(True)
@@ -162,23 +172,31 @@ class WuFooEntriesWindow(QWidget):
         bottom_pane = QVBoxLayout()
         b_pane_layout = QGridLayout()
         bottom_pane.addLayout(b_pane_layout)
+
         b_pane_layout.addWidget(QLabel("Claimed By"), 0, 1)
         b_pane_layout.addWidget(self.claim_button, 0, 2)
-        self.claim_button.clicked.connect(DatabaseStuff.add_claims_to_db("email", self.email_box_claims.text))  # TODO: replace function call with instance variables made earlier
+
         b_pane_layout.addWidget(QLabel("Name:"), 1, 0)
+
         self.fname_box_claims = QLineEdit()
         b_pane_layout.addWidget(self.fname_box_claims, 1, 1)
+
         self.lname_box_claims = QLineEdit()
         b_pane_layout.addWidget(self.lname_box_claims, 1, 2)
+
         b_pane_layout.addWidget(QLabel("Title:"), 2, 0)
         self.title_box_claims = QLineEdit()
         b_pane_layout.addWidget(self.title_box_claims, 2, 1)
+
         b_pane_layout.addWidget(QLabel("Email:"), 3, 0)
         self.email_box_claims = QLineEdit()
         b_pane_layout.addWidget(self.email_box_claims, 3, 1)
+
         b_pane_layout.addWidget(QLabel("Department:"), 4, 0)
         self.department_box = QLineEdit()
         b_pane_layout.addWidget(self.department_box, 4, 1)
+
+        self.claim_button.clicked.connect(self.put_claim_data_into_db)
 
         return bottom_pane
 
@@ -196,10 +214,13 @@ class WuFooEntriesWindow(QWidget):
         for item in data_to_add:
             display_text = f"{item['first_name']}  {item['last_name']} : {item['org']}"
             list_item = QListWidgetItem(display_text, listview=self.list_control)
+            if len(item['claimed_by']) != 0:
+                list_item.setBackground(QtGui.QColor('blue'))
             list_item.setData(1, item)  # let's put the dictionary for later use
 
     def wufoo_entry_selected(self, current: QListWidgetItem, previous: QListWidgetItem):
         selected_data = current.data(1)  # we put the full record in data role 1
+        self.entry_id = selected_data['entryID']
         self.prefix_box.setText(selected_data["prefix"])
         self.fname_box.setText(selected_data["first_name"])
         self.lname_box.setText(selected_data["last_name"])
@@ -222,8 +243,14 @@ class WuFooEntriesWindow(QWidget):
         self.permission_granted.setText(selected_data["permission_granted"])
 
     def claim_data_selected(self, current: QListWidgetItem, previous: QListWidgetItem):
-        selected_data = current.data(2)
-        self.claimed_by.setText(selected_data["claimed_by"])
+        self.fname_box_claims.setText(self.claim_data[self.entry_id]['first_name'])
+        self.lname_box_claims.setText(self.claim_data[self.entry_id]['last_name'])
+        self.title_box_claims.setText(self.claim_data[self.entry_id]['title'])
+        self.department_box.setText(self.claim_data[self.entry_id]['department'])
+        self.email_box_claims.setText(self.claim_data[self.entry_id]['email'])
 
-    # def get_text(self):
-    #     self.
+    def put_claim_data_into_db(self):
+        claim_data = [self.fname_box_claims.text(), self.lname_box_claims.text(), self.title_box_claims.text(),
+                      self.email_box_claims.text(), self.department_box.text()]
+        add_claims_to_db(claim_data, self.entry_id)
+

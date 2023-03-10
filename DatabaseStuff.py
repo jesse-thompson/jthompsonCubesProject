@@ -48,16 +48,6 @@ def create_entries_table(cursor: sqlite3.Cursor):
     cursor.execute(create_statement)
 
 
-def create_claim_table(cursor: sqlite3.Cursor):
-    create_statement = """CREATE TABLE IF NOT EXISTS Claims(
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    title TEXT,
-    email TEXT PRIMARY KEY,
-    department TEXT);"""
-    cursor.execute(create_statement)
-
-
 def add_entries_to_db(cursor: sqlite3.Cursor, entries_data: list[dict]):
     # the insert or ignore syntax will insert if the primary key isn't in use or ignore if the primary key is in the DB
     insert_statement = """INSERT OR IGNORE INTO WuFooData (entryID, prefix, first_name, last_name, title, org, email, 
@@ -71,9 +61,22 @@ def add_entries_to_db(cursor: sqlite3.Cursor, entries_data: list[dict]):
         cursor.execute(insert_statement, entry_values)
 
 
-def add_claims_to_db(column: str, claims_value: str):
+def create_claim_table(cursor: sqlite3.Cursor):
+    create_statement = """CREATE TABLE IF NOT EXISTS Claims(
+    email TEXT PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    title TEXT,
+    department TEXT,
+    FOREIGN KEY (email)
+        REFERENCES WuFooData (claimed_by));"""
+    cursor.execute(create_statement)
+
+
+def add_claims_to_db(claims_values: list[str], entry_id: int):
     conn, cursor = open_db(db_name)
-    insert_statement = f"""INSERT OR IGNORE INTO Claims ({column})
-    VALUES(?)"""
-    cursor.execute(insert_statement, claims_value)
+    cursor.execute(f"""UPDATE WuFooData SET claimed_by = ? WHERE entryID = {entry_id}""", (claims_values[3],))
+    insert_statement = """INSERT OR IGNORE INTO Claims (first_name, last_name, title, email, department)
+    VALUES(?,?,?,?,?)"""
+    cursor.execute(insert_statement, claims_values)
     close_db(conn)

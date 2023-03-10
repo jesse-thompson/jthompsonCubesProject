@@ -8,13 +8,17 @@ holding the API key in a file "secrets.py"
 
 <h3>Description:</h3>
 
-This program retrieves the data entries of a Wufoo form and save it into a
+This program has 2 options when run.<br>
+Option 1 retrieves the data entries of a Wufoo form and saves it into a
 SQL database.<br>
-The database consists of a single table and is and contains all entry data retrieved from the server.
-The order of organization is the same as it is retrieved.
+Option 2 displays the data in a GUI.<br>
+When the GUI is selected, it will display a list of names with their respective organizations for selection. 
+When a selection is made form the list, the corresponding information will be displayed.<br>
+There is also the option of entering data to select and entry. Once the data is entered into the fields, 
+the "Click to claim proposal" button is clicked, it will save the data into the tables.
+
+The database consists of a table for WuFoo entries and a table for claiming entries.
 The field names are adapted to be easily understood.
 
-When you click the organization names, it will show a message box with
-the information from the entry.
-
-The tests on GitHub Actions definitely don't work, even if there are any tests for the GUI, which there probably aren't.
+The tests on GitHub Actions don't work, and no new tests have been added.<br>
+Auto-filling of data on email entry doesn't happen.
