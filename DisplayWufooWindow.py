@@ -164,7 +164,7 @@ class WuFooEntriesWindow(QWidget):
         bottom_pane.addLayout(b_pane_layout)
         b_pane_layout.addWidget(QLabel("Claimed By"), 0, 1)
         b_pane_layout.addWidget(self.claim_button, 0, 2)
-        # self.claim_button.clicked.connect(DatabaseStuff.add_claims_to_db("email", self.email_box_claims.text()))
+        self.claim_button.clicked.connect(DatabaseStuff.add_claims_to_db("email", self.email_box_claims.text))  # TODO: replace function call with instance variables made earlier
         b_pane_layout.addWidget(QLabel("Name:"), 1, 0)
         self.fname_box_claims = QLineEdit()
         b_pane_layout.addWidget(self.fname_box_claims, 1, 1)
